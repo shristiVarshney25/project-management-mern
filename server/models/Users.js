@@ -41,6 +41,9 @@ const userSchema = new mongoose.Schema({
   password: {
     type: String,
   },
+  comment: {
+    type: String,
+  },
   projects: [projectSchema],
 
   userverified: {

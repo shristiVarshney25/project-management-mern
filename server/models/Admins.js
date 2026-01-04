@@ -40,6 +40,9 @@ const adminSchema = new mongoose.Schema({
   password: {
     type: String
   },
+  comment: {
+    type: String,
+  },
   projects: [projectSchema],
 
   userverified: {
