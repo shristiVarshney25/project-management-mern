@@ -16,6 +16,42 @@ export default function EditPage() {
   const [phone, setPhone] = useState("");
   const [fullName, setFullName] = useState("");
   const [title, setTitle] = useState("");
+  const [comment, setComment] = useState("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        let apiUrl = '';
+        const role = data.role;
+        if (role === "admin") {
+          apiUrl = `${URL}/admin/getbyid/${data?.uid}`;
+        } else if (role === "user") {
+          apiUrl = `${URL}/user/getbyid/${data?.uid}`;
+        } else {
+          throw new Error('Invalid user or admin');
+        }
+
+        const response = await axios.get(apiUrl, {
+          headers: {
+            "access-token": token
+          }
+        });
+
+        const userData = response.data;
+        setEmail(userData.email || "");
+        setPhone(userData.phone || "");
+        setFullName(userData.fullName || "");
+        setTitle(userData.title || "");
+        setComment(userData.comment || "");
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    if (data?.uid) {
+      fetchUserData();
+    }
+  }, [URL, token, data]);
 
   const handleEmailChange = (event) => {
     setEmail(event.target.value);
@@ -32,6 +68,11 @@ export default function EditPage() {
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
   };
+
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
+  };
+
   async function updateProfile(event) {
     event.preventDefault();
 
@@ -50,7 +91,8 @@ export default function EditPage() {
         email,
         phone,
         fullName,
-        title
+        title,
+        comment
       };
 
       const response = await axios.put(apiUrl, updateData, {
@@ -117,6 +159,17 @@ export default function EditPage() {
               required
               onChange={handleTitleChange}
             />
+          </div>
+          {/* Comment field */}
+          <div className="mb-4">
+            <label htmlFor="comment" className="block text-gray-700 mb-2">Comment:</label>
+            <textarea
+              id="comment"
+              className="w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:border-blue-500"
+              rows="4"
+              value={comment}
+              onChange={handleCommentChange}
+            ></textarea>
           </div>
           <div className='flex justify-center mt-7 space-x-4'>
             {/* Back button */}

@@ -30,21 +30,25 @@ router.get("/getbyid/:id", async (req, res) => {
 //UPDATE admin BY ID
 router.put("/updateAdmin/:id", async (req, res) => {
   try {
-    let uid = req.params.id;
-    let adminData = req.body;
-    await adminModel.findOneAndUpdate(
+    const uid = req.params.id;
+    const { email, phone, fullName, title, comment } = req.body;
+
+    const updatedAdmin = await adminModel.findOneAndUpdate(
       { uid },
       {
-        $set: adminData,
+        $set: { email, phone, fullName, title, comment },
       },
-      {
-        new: true,
-      }
+      { new: true }
     );
-    res.status(200).json({ msg: "Task Updated sucessfully..." });
+
+    if (!updatedAdmin) {
+      return res.status(404).json({ success: false, msg: "Admin not found" });
+    }
+
+    res.status(200).json({ msg: "Admin updated successfully" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ sucess: false, msg: "Internel Server Error" });
+    console.error(error);
+    res.status(500).json({ success: false, msg: "Internal Server Error" });
   }
 });
 

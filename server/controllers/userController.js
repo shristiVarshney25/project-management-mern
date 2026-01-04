@@ -30,21 +30,25 @@ router.get("/getbyid/:id", async (req, res) => {
 //update user by id
 router.put("/updateUser/:id", async (req, res) => {
   try {
-    let uid = req.params.id;
-    let userData = req.body;
-    await userModel.findOneAndUpdate(
+    const uid = req.params.id;
+    const { email, phone, fullName, title, comment } = req.body;
+
+    const updatedUser = await userModel.findOneAndUpdate(
       { uid },
       {
-        $set: userData,
+        $set: { email, phone, fullName, title, comment },
       },
-      {
-        new: true,
-      }
+      { new: true }
     );
-    res.status(200).json({ msg: "Task Updated sucessfully..." });
+
+    if (!updatedUser) {
+      return res.status(404).json({ success: false, msg: "User not found" });
+    }
+
+    res.status(200).json({ msg: "User updated successfully" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ sucess: false, msg: "Internel Server Error" });
+    console.error(error);
+    res.status(500).json({ success: false, msg: "Internal Server Error" });
   }
 });
 
